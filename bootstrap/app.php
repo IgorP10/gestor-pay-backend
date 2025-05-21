@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\GenerateMonthlyCharges;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         //
+    })
+    ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command(GenerateMonthlyCharges::class)->daily();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

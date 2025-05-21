@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreChargeRequest extends FormRequest
+class StoreRecurringChargeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,8 @@ class StoreChargeRequest extends FormRequest
             'organization_id' => 'required|exists:organizations,id',
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
-            'due_date' => 'required|date',
-            'status' => 'in:pending,paid',
-            'payment_date' => 'nullable|date',
+            'due_day' => 'required|integer|between:1,28',
+            'active' => 'boolean',
         ];
     }
 }
