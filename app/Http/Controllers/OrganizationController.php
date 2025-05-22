@@ -10,9 +10,17 @@ use Illuminate\Http\Response;
 
 class OrganizationController extends Controller
 {
-    public function index(): Collection
+    public function index(Request $request)
     {
-        return Organization::all();
+        $request->validate([
+            'per_page' => 'nullable|integer|min:1|max:100',
+            'name' => 'nullable|string|max:255',
+        ]);
+
+        $query = Organization::query()
+            ->when($request->name, fn($q) => $q->where('name', 'like', "%{$request->name}%"));
+
+        return $query->paginate($request->input('per_page', 15));
     }
 
     public function store(StoreOrganizationRequest $request): Organization

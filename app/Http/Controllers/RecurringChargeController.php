@@ -10,9 +10,20 @@ use App\Http\Requests\StoreRecurringChargeRequest;
 
 class RecurringChargeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return RecurringCharge::whereIn('organization_id', auth()->user()->organizations->pluck('id'))->get();
+        $request->validate([
+            'organization_id' => 'nullable|exists:organizations,id',
+            'active' => 'nullable|boolean',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+
+        $query = RecurringCharge::query()
+            ->when($request->organization_id, fn($q) => $q->where('organization_id', $request->organization_id))
+            ->when(!is_null($request->active), fn($q) => $q->where('active', $request->boolean('active')))
+            ->whereIn('organization_id', auth()->user()->organizations->pluck('id'));
+
+        return $query->paginate($request->input('per_page', 15));
     }
 
     public function store(StoreRecurringChargeRequest $request)
